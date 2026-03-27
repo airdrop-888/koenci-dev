@@ -16,6 +16,8 @@ import {
 
 export default async function DashboardPage() {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  const userId = user?.id || '';
 
   const [
     { count: totalProjects, error: err1 },
@@ -23,7 +25,7 @@ export default async function DashboardPage() {
     { count: totalUsers, error: err3 },
     { data: recentLicenses, error: err4 },
   ] = await Promise.all([
-    supabase.from("projects").select("*", { count: "exact", head: true }),
+    supabase.from("projects").select("*", { count: "exact", head: true }).eq("owner_id", userId),
     supabase.from("licenses").select("*", { count: "exact", head: true }).eq("status", "active"),
     supabase.from("profiles").select("*", { count: "exact", head: true }),
     supabase.from("licenses").select("*, projects(name)").order("created_at", { ascending: false }).limit(5),

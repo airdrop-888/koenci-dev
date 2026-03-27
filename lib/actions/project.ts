@@ -13,16 +13,15 @@ export async function createProject(formData: FormData) {
   const generateSegment = () => Math.random().toString(36).substring(2, 10);
   const apiSecret = `koenci_${generateSegment()}${generateSegment()}`;
   
-  // Let's grab the first available profile ID to avoid Foreign Key Constraint errors.
-  // If none exist, fallback to the requested dummy ID.
-  const { data: profile } = await supabase.from("profiles").select("id").limit(1).single();
-  const validOwnerId = profile?.id || "00000000-0000-0000-0000-000000000000";
+  // Pull the securely authenticated user ID from the session cookie
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Unauthorized. You must be logged in to create a project.");
 
   const { error } = await supabase.from("projects").insert([
     {
       name: name,
       api_secret: apiSecret,
-      owner_id: validOwnerId,
+      owner_id: user.id,
     }
   ]);
 

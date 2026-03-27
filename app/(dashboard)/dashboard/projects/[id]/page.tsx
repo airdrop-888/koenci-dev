@@ -23,11 +23,14 @@ export default async function ProjectDetailPage({
 
   const supabase = await createClient();
 
+  const { data: { user } } = await supabase.auth.getUser();
+  const userId = user?.id || '';
+
   const [
     { data: project, error: projError },
     { data: licenses, error: licError }
   ] = await Promise.all([
-    supabase.from("projects").select("*").eq("id", id).single(),
+    supabase.from("projects").select("*").eq("id", id).eq("owner_id", userId).single(),
     supabase.from("licenses").select("*").eq("project_id", id).order("created_at", { ascending: false }),
   ]);
 

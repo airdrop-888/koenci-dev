@@ -14,7 +14,10 @@ import {
 
 export default async function ProjectsPage() {
   const supabase = await createClient();
-  const { data: projects, error } = await supabase.from("projects").select("*").order("created_at", { ascending: false });
+  const { data: { user } } = await supabase.auth.getUser();
+  const userId = user?.id || '';
+
+  const { data: projects, error } = await supabase.from("projects").select("*").eq("owner_id", userId).order("created_at", { ascending: false });
 
   if (error) {
     console.warn("Error fetching projects:", error);

@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { KeyRound, LayoutDashboard, Settings, FolderGit2 } from "lucide-react";
+import { KeyRound, LayoutDashboard, Settings, FolderGit2, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { logout } from "@/lib/actions/auth";
 
 const navItems = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -50,15 +51,15 @@ export function Sidebar() {
       </nav>
 
       <div className="mt-auto px-2">
-        <div className="rounded-md bg-zinc-900 border border-zinc-800 p-4">
-          <h4 className="text-sm font-medium text-zinc-50">Free Tier</h4>
-          <p className="mt-1 text-xs text-zinc-400">
-            0 / 3 Projects used
-          </p>
-          <div className="mt-3 h-1 w-full rounded-full bg-zinc-800">
-            <div className="h-1 w-0 rounded-full bg-emerald-500" />
-          </div>
-        </div>
+        <form action={logout}>
+          <button
+            type="submit"
+            className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-rose-500 hover:bg-rose-500/10 transition-colors"
+          >
+            <LogOut className="h-4 w-4" />
+            Logout
+          </button>
+        </form>
       </div>
     </aside>
   );

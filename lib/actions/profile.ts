@@ -17,8 +17,12 @@ export async function regenerateApiKey() {
 
   const { error } = await supabase
     .from("profiles")
-    .update({ api_key: newApiKey })
-    .eq("id", user.id)
+    .upsert({
+      id: user.id,
+      email: user.email,
+      full_name: user?.user_metadata?.full_name || "Developer Admin",
+      api_key: newApiKey
+    }, { onConflict: "id" })
 
   if (error) {
     console.error("Failed to regenerate API key:", error)

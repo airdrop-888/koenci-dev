@@ -1,18 +1,26 @@
 import { createClient } from "@/lib/supabase/server";
 import { CopyToClipboardButton } from "@/components/shared/CopyToClipboardButton";
-import { User, Key, Globe } from "lucide-react";
+import { User, Key, Globe, RefreshCw } from "lucide-react";
+import { regenerateApiKey } from "@/lib/actions/profile";
+import { Button } from "@/components/ui/button";
 
 export default async function SettingsPage() {
   const supabase = await createClient();
-  // We fetch without auth filter per request, so let's just grab the first profile
-  const { data: profiles } = await supabase.from("profiles").select("*").limit(1);
-  const profile = profiles?.[0] || {
-    id: "N/A",
+  const { data: { user } } = await supabase.auth.getUser();
+
+  const { data: profileRow } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", user?.id || "")
+    .single();
+
+  const profile = profileRow || {
+    id: user?.id || "N/A",
     full_name: "Developer Admin",
-    email: "admin@koenci.dev",
+    email: user?.email || "admin@koenci.dev",
   };
 
-  const apiKey = "koenci_dev_abc123xyz890_dummy_key"; // A dummy API key for display
+  const apiKey = profile.api_key || "API key not generated yet.";
 
   return (
     <div className="flex flex-col gap-8 max-w-3xl">
@@ -66,12 +74,27 @@ export default async function SettingsPage() {
           <div>
             <label className="block text-xs font-medium text-amber-500/70 mb-1">Secret Key</label>
             <div className="flex gap-2">
-              <div className="flex-1 bg-black/50 border border-amber-500/20 rounded-md p-3 text-amber-200 text-sm font-mono overflow-auto">
+              <div className="flex-1 bg-black/50 border border-amber-500/20 rounded-md p-3 text-amber-200 text-sm font-mono overflow-auto flex items-center">
                 {apiKey}
               </div>
               <CopyToClipboardButton value={apiKey} />
+              <form action={regenerateApiKey}>
+                <Button variant="outline" type="submit" className="border-amber-500/20 text-amber-500 hover:bg-amber-500/10 hover:text-amber-400">
+                  <RefreshCw className="h-4 w-4 mr-2" /> Regenerate
+                </Button>
+              </form>
             </div>
             <p className="text-xs text-amber-500/50 mt-2">Never share this key with anyone or expose it in client-side code.</p>
+          </div>
+          <div className="pt-4 border-t border-amber-500/10">
+            <label className="block text-xs font-medium text-amber-500/70 mb-1">Account Owner ID</label>
+            <div className="flex gap-2">
+              <div className="flex-1 bg-black/50 border border-amber-500/20 rounded-md p-3 text-amber-200 text-sm font-mono overflow-auto flex items-center">
+                {profile.id}
+              </div>
+              <CopyToClipboardButton value={profile.id} />
+            </div>
+            <p className="text-xs text-amber-500/50 mt-2">This public identifier securely maps your software applications to your developer account.</p>
           </div>
         </div>
       </div>

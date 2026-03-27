@@ -5,7 +5,7 @@ import { login } from "@/lib/actions/auth"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Link from "next/link"
-import { KeyRound, Mail, Lock } from "lucide-react"
+import { KeyRound, Mail, Lock, Loader2 } from "lucide-react"
 
 export default function LoginPage() {
   const [error, setError] = useState<string | null>(null)
@@ -18,10 +18,11 @@ export default function LoginPage() {
       const res = await login(formData)
       if (res?.error) {
         setError(res.error)
+        setLoading(false)
       }
+      // If no error, we are redirecting, so keep loading = true
     } catch (err: any) {
       setError(err.message || "Failed to login")
-    } finally {
       setLoading(false)
     }
   }
@@ -81,7 +82,12 @@ export default function LoginPage() {
           </div>
 
           <Button type="submit" className="w-full bg-emerald-500 text-black hover:bg-emerald-400 mt-6" disabled={loading}>
-            {loading ? "Signing In..." : "Sign In"}
+            {loading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Signing In...
+              </>
+            ) : "Sign In"}
           </Button>
         </form>
 

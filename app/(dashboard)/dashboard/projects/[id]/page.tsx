@@ -89,6 +89,50 @@ export default async function ProjectDetailPage({
         </div>
       </div>
 
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-6">
+           <h3 className="text-lg font-medium text-white mb-4">Application Credentials</h3>
+           <div className="space-y-4">
+             <div>
+               <label className="block text-xs font-medium text-zinc-400 mb-1">Application Name</label>
+               <div className="bg-zinc-900 border border-zinc-800 rounded-md p-3 text-zinc-300 text-sm font-medium">
+                 {project.name}
+               </div>
+             </div>
+             <div>
+               <label className="block text-xs font-medium text-zinc-400 mb-1">Application Secret</label>
+               <div className="flex gap-2">
+                 <div className="flex-1 bg-zinc-900 border border-zinc-800 rounded-md p-3 text-emerald-400 text-sm font-mono overflow-auto flex items-center">
+                   {project.api_secret}
+                 </div>
+                 <CopyToClipboardButton value={project.api_secret} />
+               </div>
+             </div>
+           </div>
+        </div>
+
+        <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-6 flex flex-col">
+           <div className="flex justify-between items-center mb-4">
+             <h3 className="text-lg font-medium text-white">SDK Initialization</h3>
+             <CopyToClipboardButton value={`Koenci.App(
+    name: "${project.name}",
+    ownerId: "${project.owner_id}",
+    secret: "${project.api_secret}"
+);`} />
+           </div>
+           
+           <div className="flex-1 bg-[#0d0d0d] border border-zinc-800 rounded-md p-4 text-emerald-400 text-sm font-mono overflow-auto flex flex-col justify-center">
+             <pre className="whitespace-pre-wrap leading-relaxed text-zinc-300">
+               <span className="text-sky-400">Koenci</span>.<span className="text-emerald-300">App</span>(
+                   <span className="text-zinc-500">name:</span> <span className="text-amber-300">"{project.name}"</span>,
+                   <span className="text-zinc-500">ownerId:</span> <span className="text-amber-300">"{project.owner_id}"</span>,
+                   <span className="text-zinc-500">secret:</span> <span className="text-amber-300">"{project.api_secret}"</span>
+               );
+             </pre>
+           </div>
+        </div>
+      </div>
+
       <div className="mt-4">
         <h3 className="text-lg font-medium text-white mb-4">License Keys</h3>
         <div className="rounded-md border border-zinc-800 bg-zinc-950 overflow-hidden">

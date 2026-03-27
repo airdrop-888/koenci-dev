@@ -5,7 +5,7 @@ import { signup } from "@/lib/actions/auth"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Link from "next/link"
-import { KeyRound, Mail, Lock, User } from "lucide-react"
+import { KeyRound, Mail, Lock, User, Loader2 } from "lucide-react"
 
 export default function RegisterPage() {
   const [error, setError] = useState<string | null>(null)
@@ -28,10 +28,11 @@ export default function RegisterPage() {
       const res = await signup(formData)
       if (res?.error) {
         setError(res.error)
+        setLoading(false)
       }
+      // If no error, we are redirecting, so keep loading = true
     } catch (err: any) {
       setError(err.message || "Failed to sign up")
-    } finally {
       setLoading(false)
     }
   }
@@ -123,7 +124,12 @@ export default function RegisterPage() {
           </div>
 
           <Button type="submit" className="w-full bg-sky-500 text-black hover:bg-sky-400 mt-6" disabled={loading}>
-            {loading ? "Creating account..." : "Register"}
+            {loading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Creating account...
+              </>
+            ) : "Register"}
           </Button>
         </form>
 
